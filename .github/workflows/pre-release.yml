@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install GitPython packaging towncrier
+          pip install GitPython packaging towncrier pre-commit
       - name: Configure git identity
         run: |
           git config user.name "github-actions[bot]"
