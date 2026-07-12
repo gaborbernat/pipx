@@ -1,4 +1,5 @@
 import hashlib
+import json
 import shutil
 import subprocess
 from pathlib import Path
@@ -28,23 +29,23 @@ def test_scoop_wrapper_from_winpython_scripts(tmp_path: Path) -> None:
     scoop_wrapper = tmp_path / "scoop" / "pipx.bat"
     scoop_wrapper.parent.mkdir()
     scoop_wrapper.write_text("@python --version\n", encoding="utf-8")
-    setup = f'call "{scripts / "env_for_icons.bat"}" & cd /d "{scripts}" &'
 
-    direct = subprocess.run(
-        ["cmd.exe", "/d", "/c", f'{setup} "{root / "python-3.12.2.amd64" / "python.exe"}" --version'],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    wrapped = subprocess.run(
-        ["cmd.exe", "/d", "/c", f'{setup} call "{scoop_wrapper}"'],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    driver = tmp_path / "driver.bat"
+
+    def run(command: str) -> subprocess.CompletedProcess[str]:
+        driver.write_text(
+            f'@echo off\ncall "{scripts / "env_for_icons.bat"}"\ncd /d "{scripts}"\n{command}\n',
+            encoding="utf-8",
+        )
+        return subprocess.run(["cmd.exe", "/d", "/c", driver], capture_output=True, text=True, check=False)
+
+    direct = run(f'"{root / "python-3.12.2.amd64" / "python.exe"}" --version')
+    wrapped = run(f'call "{scoop_wrapper}"')
 
     expected = (0, "Python 3.12.2\n", "")
-    assert (
+    actual = (
         (direct.returncode, direct.stdout, direct.stderr),
         (wrapped.returncode, wrapped.stdout, wrapped.stderr),
-    ) == (expected, expected)
+    )
+    if actual != (expected, expected):
+        raise AssertionError(json.dumps(actual))
