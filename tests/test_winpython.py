@@ -28,19 +28,23 @@ def test_scoop_wrapper_from_winpython_scripts(tmp_path: Path) -> None:
     scoop_wrapper = tmp_path / "scoop" / "pipx.bat"
     scoop_wrapper.parent.mkdir()
     scoop_wrapper.write_text("@python --version\n", encoding="utf-8")
-    setup = f'call "{scripts / "env_for_icons.bat"}" && cd /d "{scripts}" &&'
+    setup = f'call "{scripts / "env_for_icons.bat"}" & cd /d "{scripts}" &'
 
     direct = subprocess.run(
         ["cmd.exe", "/d", "/c", f'{setup} "{root / "python-3.12.2.amd64" / "python.exe"}" --version'],
         capture_output=True,
         text=True,
-        check=True,
+        check=False,
     )
     wrapped = subprocess.run(
         ["cmd.exe", "/d", "/c", f'{setup} call "{scoop_wrapper}"'],
         capture_output=True,
         text=True,
-        check=True,
+        check=False,
     )
 
-    assert (wrapped.stdout, wrapped.stderr) == (direct.stdout, direct.stderr)
+    expected = (0, "Python 3.12.2\n", "")
+    assert (
+        (direct.returncode, direct.stdout, direct.stderr),
+        (wrapped.returncode, wrapped.stdout, wrapped.stderr),
+    ) == (expected, expected)
