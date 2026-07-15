@@ -173,11 +173,11 @@ afterwards use the Python interpreter available under ``.tox/dev/bin/python``.
 Unit Tests
 ==========
 
-To run unit tests in Python 3.12, you can run
+To run unit tests in Python 3.14, you can run
 
 .. code-block:: console
 
-    $ tox run -e 3.12
+    $ tox run -e 3.14
 
 .. tip::
 
@@ -185,13 +185,13 @@ To run unit tests in Python 3.12, you can run
 
     .. code-block:: console
 
-        $ tox run -e 3.10 -- -k EXPRESSION
+        $ tox run -e 3.14 -- -k EXPRESSION
 
     ``EXPRESSION`` can be a test name, such as
 
     .. code-block:: console
 
-        $ tox run -e 3.10 -- -k test_uninstall
+        $ tox run -e 3.14 -- -k test_uninstall
 
     Coverage errors can usually be ignored when only running a subset of tests.
 

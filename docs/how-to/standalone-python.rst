@@ -54,15 +54,15 @@ overriding you when the package rejects it.
 
 .. code-block:: console
 
-    $ pipx install --python 3.13 --fetch-python=missing my-package
-    $ pipx install --python 3.13 --fetch-python=always my-package
+    $ pipx install --python 3.14 --fetch-python=missing my-package
+    $ pipx install --python 3.14 --fetch-python=always my-package
 
 Set it for the whole shell session with the environment variable:
 
 .. code-block:: console
 
     $ export PIPX_FETCH_PYTHON=missing
-    $ pipx install --python 3.13 my-package
+    $ pipx install --python 3.14 my-package
 
 Reach for ``always`` in CI runs that should not depend on the runner's Python, on distros that strip modules like
 ``tkinter`` or ``lzma``, or on air-gapped hosts with a populated standalone cache.

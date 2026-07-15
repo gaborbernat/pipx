@@ -14,8 +14,8 @@ Install from PyPI, optionally pinning the Python version:
 .. code-block:: bash
 
     pipx install pycowsay
-    pipx install --python 3.12 pycowsay
-    pipx install --fetch-python=missing --python 3.12 pycowsay
+    pipx install --python 3.14 pycowsay
+    pipx install --fetch-python=missing --python 3.14 pycowsay
 
 Constrain or eagerly upgrade a version spec:
 
@@ -65,7 +65,7 @@ Run an app in a temporary environment, optionally pinning package or Python vers
 
     pipx run pycowsay moo
     pipx run --spec 'pycowsay==2.0' pycowsay --version
-    pipx run --python 3.12 pycowsay moo
+    pipx run --python 3.14 pycowsay moo
 
 Run from a VCS URL or an archive:
 
@@ -123,10 +123,10 @@ List installed packages and their apps:
     $ pipx list
     venvs are in /home/user/.local/share/pipx/venvs
     apps are exposed on your $PATH at /home/user/.local/bin
-       package black 24.3.0, Python 3.12.0
+       package black 24.3.0, Python 3.14.0
         - black
         - blackd
-       package pipx 1.4.3, Python 3.12.0
+       package pipx 1.4.3, Python 3.14.0
         - pipx
 
 Narrow the output or change the format; the package filter works with every format:
@@ -151,12 +151,12 @@ Reinstall from a snapshot produced by ``pipx list --output json`` (see :doc:`jso
     'pipx' already seems to be installed. Not modifying existing installation in '/usr/local/pipx/venvs/pipx'. Pass '--force' to force installation.
     $ pipx install-all pipx.json --force
     Installing to existing venv 'black'
-      installed package black 24.3.0, installed using Python 3.12.0
+      installed package black 24.3.0, installed using Python 3.14.0
       These apps are now globally available
         - black
         - blackd
     Installing to existing venv 'pipx'
-      installed package pipx 1.4.3, installed using Python 3.12.0
+      installed package pipx 1.4.3, installed using Python 3.14.0
       These apps are now globally available
         - pipx
 

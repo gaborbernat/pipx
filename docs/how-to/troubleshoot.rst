@@ -21,13 +21,13 @@ Install with a different Python:
 
 .. code-block:: console
 
-    $ pipx install my-package --python python3.12
+    $ pipx install my-package --python python3.14
 
 If you do not have that version, let pipx download a standalone build:
 
 .. code-block:: console
 
-    $ pipx install my-package --python 3.13 --fetch-python=missing
+    $ pipx install my-package --python 3.14 --fetch-python=missing
 
 Pass ``--fetch-python=always`` to download even when the system has the requested version, for example to avoid a
 patched distro interpreter. See :doc:`standalone-python`.
@@ -57,7 +57,7 @@ Pass package names to limit the repair, and ``--python`` when the rebuilt enviro
 
 .. code-block:: console
 
-    $ pipx repair --python python3.13
+    $ pipx repair --python python3.14
 
 ``pipx repair`` reuses the recorded metadata, like ``pipx reinstall``, and leaves healthy environments unchanged. It
 refuses a pinned package because its recorded source may resolve to another release; run ``pipx unpin PACKAGE`` first.

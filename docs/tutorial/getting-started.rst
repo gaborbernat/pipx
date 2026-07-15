@@ -42,7 +42,7 @@ Pick a small package to try. ``pycowsay`` works well:
 .. code-block:: console
 
     $ pipx install pycowsay
-      installed package pycowsay 2.0.3, Python 3.10.3
+      installed package pycowsay 2.0.3, Python 3.14.0
       These apps are now globally available
         - pycowsay
     done! ✨ 🌟 ✨
@@ -84,7 +84,7 @@ If you see the cow, pipx is working.
     $ pipx list
     venvs are in /home/user/.local/share/pipx/venvs
     apps are exposed on your $PATH at /home/user/.local/bin
-       package pycowsay 2.0.3, Python 3.10.3
+       package pycowsay 2.0.3, Python 3.14.0
         - pycowsay
 
 The output shows each virtual environment's location, the apps it exposes, and the Python version it uses.
