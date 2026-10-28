@@ -165,19 +165,21 @@ def run_script(  # ruff:ignore[too-many-arguments]  # mirrors the flat `pipx run
                 _prepare_venv_cache(
                     Venv(venv_dir, backend=backend, env_backend=env_backend), None, use_cache=use_cache, refresh=refresh
                 )
-                run_script_via_uv_run(
-                    script_path=script_source,
-                    venv_dir=venv_dir,
-                    app_args=app_args,
-                    python=python,
-                    pip_args=pip_args,
-                    venv_args=venv_args,
-                    use_cache=use_cache,
-                    verbose=verbose,
-                    refresh=refresh,
-                    dependencies=dependencies,
-                    cooldown_days=cooldown_days,
-                )
+            # uv locks the environment while it syncs; holding pipx's lock through the run would block a second run of
+            # the same script on Windows, where pipx waits for the child instead of exec-ing it
+            run_script_via_uv_run(
+                script_path=script_source,
+                venv_dir=venv_dir,
+                app_args=app_args,
+                python=python,
+                pip_args=pip_args,
+                venv_args=venv_args,
+                use_cache=use_cache,
+                verbose=verbose,
+                refresh=refresh,
+                dependencies=dependencies,
+                cooldown_days=cooldown_days,
+            )
         # URL / named-pipe content has no on-disk path for ``uv run --script``;
         # warn so users on ``--backend uv`` notice they lose uv's cache and
         # Python-managing semantics for this run.

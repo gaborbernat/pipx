@@ -14,7 +14,7 @@ from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler
 from pathlib import Path
 from socketserver import ThreadingTCPServer
 from threading import Thread
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, NoReturn
 from unittest import mock
 
 import pytest
@@ -847,6 +847,28 @@ def publish_demodep(tmp_path: Path) -> Callable[[str, str], Path]:
         return links
 
     return publish
+
+
+@pytest.mark.usefixtures("pipx_temp_env")
+def test_run_script_uv_releases_cache_lock_before_handoff(tmp_path: Path, mocker: MockerFixture) -> None:
+    held: Final[list[bool]] = []
+
+    def probe_locks(_cmd_path: str, _cmd_args: Sequence[str], _env: Mapping[str, str]) -> NoReturn:
+        for lock_file in paths.ctx.venv_cache.glob(".*.lock"):
+            try:
+                FileLock(lock_file).acquire(timeout=0).lock.release()
+            except Timeout:
+                held.append(True)
+            else:
+                held.append(False)
+        sys.exit(0)
+
+    mocker.patch("os.execvpe", autospec=True, side_effect=probe_locks)
+    (script := tmp_path / "test.py").write_text("# /// script\n# dependencies = []\n# ///\n")
+
+    run_pipx_cli_exit(["run", "--backend", "uv", str(script)], assert_exit=0)
+
+    assert held == [False]
 
 
 @pytest.mark.usefixtures("pipx_temp_env")
