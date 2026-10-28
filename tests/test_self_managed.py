@@ -75,34 +75,23 @@ def test_self_managed_moved_value_is_discovered(
 
 
 @_SKIP_ON_WINDOWS
-def test_self_managed_direct_venv_script_does_not_set_bin_dir(
-    self_managed_installation: _SelfManagedInstallation,
-) -> None:
-    assert "PIPX_BIN_DIR" not in discover_self_managed_environment(
-        prefix=self_managed_installation.venv,
-        executable=str(self_managed_installation.venv / "bin" / "pipx"),
-    )
-
-
-@_SKIP_ON_WINDOWS
-def test_self_managed_venv_script_through_parent_directory_does_not_set_bin_dir(
-    self_managed_installation: _SelfManagedInstallation,
-) -> None:
-    assert "PIPX_BIN_DIR" not in discover_self_managed_environment(
-        prefix=self_managed_installation.venv,
-        executable=str(self_managed_installation.bin_dir / ".." / "venvs" / "pipx" / "bin" / "pipx"),
-    )
-
-
-@_SKIP_ON_WINDOWS
-def test_self_managed_venv_script_through_linked_directory_does_not_set_bin_dir(
+@pytest.mark.parametrize(
+    "script",
+    [
+        pytest.param("custom/pipx/venvs/pipx/bin/pipx", id="direct"),
+        pytest.param("custom/pipx/bin/../venvs/pipx/bin/pipx", id="through-parent-directory"),
+        pytest.param("home-link/venvs/pipx/bin/pipx", id="through-linked-directory"),
+    ],
+)
+def test_self_managed_venv_script_does_not_set_bin_dir(
     self_managed_installation: _SelfManagedInstallation,
     tmp_path: Path,
+    script: str,
 ) -> None:
-    (linked_home := tmp_path / "home-link").symlink_to(self_managed_installation.home)
+    (tmp_path / "home-link").symlink_to(self_managed_installation.home)
     assert "PIPX_BIN_DIR" not in discover_self_managed_environment(
         prefix=self_managed_installation.venv,
-        executable=str(linked_home / "venvs" / "pipx" / "bin" / "pipx"),
+        executable=str(tmp_path / script),
     )
 
 
