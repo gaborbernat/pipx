@@ -320,7 +320,8 @@ def _links_into_another_venv(symlink_path: Path, path: Path) -> bool:
     except RuntimeError:  # a symlink loop, which Python before 3.13 reports this way
         return False
     venv_dir: Final[Path | None] = next((parent for parent in target.parents if parent.parent == venvs), None)
-    return venv_dir is not None and venv_dir.is_dir() and not path.resolve().is_relative_to(venv_dir)
+    # the resource itself can be a symlink out of its venv, such as a uv install with link-mode=symlink
+    return venv_dir is not None and venv_dir.is_dir() and not path.parent.resolve().is_relative_to(venv_dir)
 
 
 def _remove_resource_named_before_last_dot(dest_dir: Path, path: Path, suffix: str) -> None:

@@ -192,6 +192,18 @@ def test_expose_replaces_left_over_link(tmp_path: Path, target: str) -> None:
 
 @skip_if_windows
 @pytest.mark.usefixtures("pipx_temp_env")
+def test_expose_replaces_own_left_over_link_when_resource_links_out_of_venv(tmp_path: Path) -> None:
+    (cached := tmp_path / "cache" / "tool").parent.mkdir()
+    cached.touch()
+    (path := paths.ctx.venvs / "other" / "bin" / "tool").parent.mkdir(parents=True)
+    path.symlink_to(cached)
+    (link := tmp_path / "tool").symlink_to(paths.ctx.venvs / "other" / "bin" / "renamed")
+
+    assert (expose_resources_globally("app", tmp_path, [path], force=False), link.readlink()) == ([], path)
+
+
+@skip_if_windows
+@pytest.mark.usefixtures("pipx_temp_env")
 def test_remove_stale_venv_resources_keeps_files_pipx_does_not_own(capsys: pytest.CaptureFixture[str]) -> None:
     assert run_pipx_cli(["install", "pycowsay"]) == 0
     capsys.readouterr()
