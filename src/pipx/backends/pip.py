@@ -34,7 +34,7 @@ class PipBackend(Backend):
     def needs_shared_libs(self) -> bool:  # ruff:ignore[no-self-use]  # Backend interface method, must dispatch polymorphically
         return True
 
-    def upgrade_packaging_libraries(  # Backend interface method, must dispatch polymorphically
+    def upgrade_packaging_libraries(
         self,
         venv_python: Path,
         pip_args: list[str],
@@ -129,7 +129,7 @@ class PipBackend(Backend):
     def cooldown_args(cooldown_days: int | None) -> list[str]:
         return [] if not cooldown_days else ["--uploaded-prior-to", f"P{cooldown_days}D"]
 
-    def uninstall(  # Backend interface method, must dispatch polymorphically
+    def uninstall(
         self,
         *,
         venv_root: Path,
@@ -147,7 +147,7 @@ class PipBackend(Backend):
         subprocess_post_check(process)
         return process
 
-    def list_installed(  # Backend interface method, must dispatch polymorphically
+    def list_installed(
         self,
         *,
         venv_root: Path,
@@ -170,7 +170,7 @@ class PipBackend(Backend):
             raise PipxError(msg)
         return {entry["name"] for entry in json.loads(process.stdout.strip())}
 
-    def list_outdated(  # Backend interface method, must dispatch polymorphically
+    def list_outdated(
         self,
         *,
         venv_root: Path,
