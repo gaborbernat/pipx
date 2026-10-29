@@ -10,8 +10,8 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from helpers import SKIP_IF_WINDOWS, run_pipx_cli
-from pipx import paths
+from helpers import SKIP_IF_WINDOWS, app_name, run_pipx_cli
+from pipx import paths, util
 from pipx.commands import common
 from pipx.commands.common import (
     add_suffix,
@@ -620,6 +620,34 @@ def test_copied_app_named_before_last_dot_is_removed(
     assert not run_pipx_cli(command)
 
     assert not legacy.exists()
+
+
+@pytest.mark.usefixtures("pipx_temp_env")
+def test_copied_own_launcher_refreshes_quietly_on_reinstall(
+    dotted_app_wheel: Path, mocker: MockerFixture, caplog: pytest.LogCaptureFixture
+) -> None:
+    mocker.patch.object(common, "can_symlink", autospec=True, return_value=False)
+    assert not run_pipx_cli(["install", str(dotted_app_wheel)])
+    exposed: Final[Path] = paths.CTX.bin_dir / app_name("tool3.12")
+    exposed.write_bytes(exposed.read_bytes() + b"# stale\n")
+
+    assert not run_pipx_cli(["reinstall", "foo-bar-x"])
+
+    launcher: Final[Path] = util.get_venv_paths(paths.CTX.venvs / "foo-bar-x")[0] / exposed.name
+    assert (exposed.read_bytes(), f"Overwriting file {exposed}" in caplog.text) == (launcher.read_bytes(), False)
+
+
+@pytest.mark.usefixtures("pipx_temp_env")
+def test_copied_foreign_launcher_warns_on_force_install(
+    dotted_app_wheel: Path, mocker: MockerFixture, caplog: pytest.LogCaptureFixture
+) -> None:
+    mocker.patch.object(common, "can_symlink", autospec=True, return_value=False)
+    paths.CTX.bin_dir.mkdir(parents=True)
+    (exposed := paths.CTX.bin_dir / app_name("tool3.12")).write_text("#!/elsewhere/bin/python\n", encoding="utf-8")
+
+    assert not run_pipx_cli(["install", "--force", str(dotted_app_wheel)])
+
+    assert f"Overwriting file {exposed}" in caplog.text
 
 
 @pytest.mark.parametrize(
